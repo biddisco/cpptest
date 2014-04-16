@@ -4,8 +4,11 @@ project (cpptest)
 
 OPTION (BUILD_SHARED_LIBS "Build shared libraries." OFF)
 
-include(BGAS-MVAPICH.cmake)
-include_directories(${MPI_INCLUDE_PATH})
+if(BGAS)
+  include(BGAS-MVAPICH.cmake)
+  include_directories(${MPI_INCLUDE_PATH})
+endif()
+
 #------------------------------------------------------------------------------
 # Boost
 #------------------------------------------------------------------------------
@@ -43,7 +46,7 @@ set(TEST_SRCS
 
 foreach(test ${TEST_SRCS})
   add_executable(${test} ${test}.cxx)
-  target_link_libraries(${test} ${MPI_C_LIBRARIES})
+#  target_link_libraries(${test} ${MPI_C_LIBRARIES})
   target_link_libraries(${test} ${Boost_LIBRARIES})
 endforeach()
 
