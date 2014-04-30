@@ -41,12 +41,24 @@ set(TEST_SRCS
 )
 
 #------------------------------------------------------------------------------
+# MPI tests which have one c++ file per exe
+#------------------------------------------------------------------------------
+set(MPI_TEST_SRCS 
+# simple mpi c++test
+  hellompi
+) 
+
+#------------------------------------------------------------------------------
 # create exes for tests
 #------------------------------------------------------------------------------
 
 foreach(test ${TEST_SRCS})
   add_executable(${test} ${test}.cxx)
-#  target_link_libraries(${test} ${MPI_C_LIBRARIES})
   target_link_libraries(${test} ${Boost_LIBRARIES})
+endforeach()
+
+foreach(test ${MPI_TEST_SRCS})
+  add_executable(${test} ${test}.cxx)
+  target_link_libraries(${test} ${MPI_C_LIBRARIES})
 endforeach()
 
