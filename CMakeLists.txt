@@ -13,13 +13,9 @@ endif()
 # Boost
 #------------------------------------------------------------------------------
 find_package( Boost 1.54.0 REQUIRED thread system program_options serialization filesystem regex)
-include_directories(${Boost_INCLUDE_DIR})
 if(Boost_FOUND)
   message("Boost found version ${Boost_VERSION}")
 endif()
-
-INCLUDE_DIRECTORIES( ${Boost_INCLUDE_DIR} )
-LINK_DIRECTORIES(${Boost_LIBRARY_DIR})
 
 #------------------------------------------------------------------------------
 # Make a dummy library to test shared linking
@@ -27,11 +23,17 @@ LINK_DIRECTORIES(${Boost_LIBRARY_DIR})
 add_library(test SHARED libtest.cxx)
 
 #------------------------------------------------------------------------------
-# Simple tests which have one c++ file per exe
+# Simple test requiring no special libs
 #------------------------------------------------------------------------------
 set(TEST_SRCS 
 # simple c++test
   hello 
+)
+
+#------------------------------------------------------------------------------
+# Simple tests which have one c++ file per exe
+#------------------------------------------------------------------------------
+set(BOOST_TEST_SRCS 
 # test boost serialize
   serialize 
 # test boost program options
@@ -54,8 +56,17 @@ set(MPI_TEST_SRCS
 
 foreach(test ${TEST_SRCS})
   add_executable(${test} ${test}.cxx)
+endforeach()
+
+include_directories(${Boost_INCLUDE_DIR})
+LINK_DIRECTORIES(${Boost_LIBRARY_DIR})
+
+foreach(test ${BOOST_TEST_SRCS})
+  add_executable(${test} ${test}.cxx)
   target_link_libraries(${test} ${Boost_LIBRARIES})
 endforeach()
+
+include_directories(${MPI_INCLUDE_PATH})
 
 foreach(test ${MPI_TEST_SRCS})
   add_executable(${test} ${test}.cxx)
