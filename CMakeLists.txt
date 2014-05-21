@@ -9,6 +9,11 @@ if(BGAS)
   include_directories(${MPI_INCLUDE_PATH})
 endif()
 
+find_package(MPI)
+if(MPI_FOUND)
+  include_directories(${MPI_INCLUDE_PATH})
+endif()
+
 #------------------------------------------------------------------------------
 # Boost
 #------------------------------------------------------------------------------
@@ -68,8 +73,9 @@ endforeach()
 
 include_directories(${MPI_INCLUDE_PATH})
 
-foreach(test ${MPI_TEST_SRCS})
-  add_executable(${test} ${test}.cxx)
-  target_link_libraries(${test} ${MPI_C_LIBRARIES})
-endforeach()
-
+if(MPI_FOUND)
+  foreach(test ${MPI_TEST_SRCS})
+    add_executable(${test} ${test}.cxx)
+    target_link_libraries(${test} ${MPI_C_LIBRARIES})
+  endforeach()
+endif()
