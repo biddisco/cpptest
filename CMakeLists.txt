@@ -45,6 +45,8 @@ set(BOOST_TEST_SRCS
   options 
 # test boost filesystem
   fs-tut1 fs-tut2 fs-tut3 fs-tut4 fs-tut5 
+#regex
+  regex-recursion
 )
 
 #------------------------------------------------------------------------------
