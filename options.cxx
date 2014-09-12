@@ -8,7 +8,7 @@
 #include <vector> 
 
 //
-// usage, execute with args : -i 2 1 4 5 23 115 34 12 4 23 5 12 808
+// usage, execute with args : -i 2 1 4 5 23 115 34 12 4 23 5 12 808 -j 1 3 2 5 3 4 6 
 //
 // output :
 // 
@@ -32,6 +32,7 @@ int main(int argc, char *argv[]) {
   // Input Argument Handling
   //
   std::vector<int> indexed_dims;
+  std::vector<int> j_list;
 
   namespace po = boost::program_options;
   po::options_description po_description("Options");
@@ -41,6 +42,9 @@ int main(int argc, char *argv[]) {
     ("indexes,i", po::value< std::vector<int> >(&indexed_dims)
         ->default_value(std::vector<int>(0), "none")->multitoken(),
         "list of indexes to initialize vector with")
+    ("jlist,j", po::value< std::vector<int> >(&j_list)
+        ->default_value(std::vector<int>(0), "none")->multitoken(),
+        "just another list")
     ;
 
   po::positional_options_description po_positional;
@@ -75,10 +79,13 @@ int main(int argc, char *argv[]) {
 
   // must be sorted before calling unique
   std::cout << "Duplicates removed : ";
-
-  auto last = std::unique(indexed_dims.begin(), indexed_dims.end());     
+  std::vector<int>::iterator last = std::unique(indexed_dims.begin(), indexed_dims.end());     
   indexed_dims.erase(last, indexed_dims.end());
   std::copy ( indexed_dims.begin(), indexed_dims.end(), out_it );
+  std::cout << std::endl;
+
+  std::cout << "A second list for testing : ";
+  std::copy ( j_list.begin(), j_list.end(), out_it );
   std::cout << std::endl;
 
   return 0;
