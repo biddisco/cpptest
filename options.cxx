@@ -1,8 +1,21 @@
 #include "boost/program_options.hpp" 
  
-#include <iostream> 
+#include <iostream>    // cout etc
+#include <iterator>    // ostream iterator
+#include <functional>  // less/greater
+#include <algorithm >  // sort
 #include <string> 
- 
+#include <vector> 
+
+//
+// usage, execute with args : -i 2 1 4 5 23 115 34 12 4 23 5 12 808
+//
+// output :
+// 
+// Supplied indices   : 2, 1, 4, 5, 23, 115, 34, 12, 4, 23, 5, 12, 808,
+// Sorted indices     : 1, 2, 4, 4, 5, 5, 12, 12, 23, 23, 34, 115, 808,
+// Duplicates removed : 1, 2, 4, 5, 12, 23, 34, 115, 808,
+
 namespace 
 { 
   const size_t ERROR_IN_COMMAND_LINE = 1; 
@@ -10,57 +23,63 @@ namespace
   const size_t ERROR_UNHANDLED_EXCEPTION = 2; 
  
 } // namespace 
- 
-int main(int argc, char** argv) 
-{ 
-  try 
-  { 
-    /** Define and parse the program options 
-     */ 
-    namespace po = boost::program_options; 
-    po::options_description desc("Options"); 
-    desc.add_options() 
-      ("help", "Print help messages") 
-      ("add", "additional options") 
-      ("like", "this"); 
- 
-    po::variables_map vm; 
-    try 
-    { 
-      po::store(po::parse_command_line(argc, argv, desc),  
-                vm); // can throw 
- 
-      /** --help option 
-       */ 
-      if ( vm.count("help")  ) 
-      { 
-        std::cout << "Basic Command Line Parameter App" << std::endl 
-                  << desc << std::endl; 
-        return SUCCESS; 
-      } 
- 
-      po::notify(vm); // throws on error, so do after help in case 
-                      // there are any problems 
-    } 
-    catch(po::error& e) 
-    { 
-      std::cerr << "ERROR: " << e.what() << std::endl << std::endl; 
-      std::cerr << desc << std::endl; 
-      return ERROR_IN_COMMAND_LINE; 
-    } 
- 
-    // application code here // 
- 
-  } 
-  catch(std::exception& e) 
-  { 
-    std::cerr << "Unhandled Exception reached the top of main: " 
-              << e.what() << ", application will now exit" << std::endl; 
-    return ERROR_UNHANDLED_EXCEPTION; 
- 
-  } 
- 
-  return SUCCESS; 
- 
-} // main 
 
+#define VERSION 0.1 ///< Version number of the program.
+
+int main(int argc, char *argv[]) {
+
+  //
+  // Input Argument Handling
+  //
+  std::vector<int> indexed_dims;
+
+  namespace po = boost::program_options;
+  po::options_description po_description("Options");
+  po_description.add_options()
+    ("help", "display this help message")
+    ("version", "display the version number")
+    ("indexes,i", po::value< std::vector<int> >(&indexed_dims)
+        ->default_value(std::vector<int>(0), "none")->multitoken(),
+        "list of indexes to initialize vector with")
+    ;
+
+  po::positional_options_description po_positional;
+  po::variables_map po_vm;
+  po::store(po::command_line_parser(argc, argv).options(po_description)
+      .positional(po_positional).run(), po_vm);
+
+  if (po_vm.count("help")) {
+    std::cout << po_description << std::endl;
+    return 0;
+  }
+
+  if (po_vm.count("version")) {
+    std::cout << "Version " << VERSION << std::endl;
+    return 0;
+  }
+
+  // this has to be after the help/version commands as this
+  // exits with an error if the required arguments aren't
+  // specified
+  po::notify(po_vm);
+
+  std::cout << "Supplied indices   : ";
+  std::ostream_iterator<int> out_it (std::cout,", ");
+  std::copy ( indexed_dims.begin(), indexed_dims.end(), out_it );
+  std::cout << std::endl;
+
+  std::cout << "Sorted indices     : ";
+  std::sort(indexed_dims.begin(), indexed_dims.end(), std::less<int>());
+  std::copy ( indexed_dims.begin(), indexed_dims.end(), out_it );
+  std::cout << std::endl;
+
+  // must be sorted before calling unique
+  std::cout << "Duplicates removed : ";
+
+  auto last = std::unique(indexed_dims.begin(), indexed_dims.end());     
+  indexed_dims.erase(last, indexed_dims.end());
+  std::copy ( indexed_dims.begin(), indexed_dims.end(), out_it );
+  std::cout << std::endl;
+
+  return 0;
+}

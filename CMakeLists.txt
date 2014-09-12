@@ -22,6 +22,8 @@ if(Boost_FOUND)
   message("Boost found version ${Boost_VERSION}")
 endif()
 
+option(USE_BOOST_DYNAMIC_LINK ON "Add BOOST_ALL_DYN_LINK to flags (windows usually)")
+
 #------------------------------------------------------------------------------
 # Make a dummy library to test shared linking
 #------------------------------------------------------------------------------
@@ -70,6 +72,9 @@ LINK_DIRECTORIES(${Boost_LIBRARY_DIR})
 
 foreach(test ${BOOST_TEST_SRCS})
   add_executable(${test} ${test}.cxx)
+  if (USE_BOOST_DYNAMIC_LINK AND ${test} MATCHES "options")
+    set_target_properties(${test} PROPERTIES COMPILE_FLAGS "-DBOOST_ALL_DYN_LINK" )
+  endif()
   target_link_libraries(${test} ${Boost_LIBRARIES})
 endforeach()
 
