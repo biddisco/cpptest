@@ -3,7 +3,7 @@
 #include <iostream>    // cout etc
 #include <iterator>    // ostream iterator
 #include <functional>  // less/greater
-#include <algorithm >  // sort
+#include <algorithm>   // sort
 #include <string> 
 #include <vector> 
 
