@@ -17,7 +17,7 @@ endif()
 #------------------------------------------------------------------------------
 # Boost
 #------------------------------------------------------------------------------
-find_package( Boost 1.54.0 REQUIRED thread system program_options serialization filesystem regex)
+find_package( Boost 1.54.0 REQUIRED thread atomic system program_options serialization filesystem regex context)
 if(Boost_FOUND)
   message("Boost found version ${Boost_VERSION}")
 endif()
@@ -47,8 +47,12 @@ set(BOOST_TEST_SRCS
   options 
 # test boost filesystem
   fs-tut1 fs-tut2 fs-tut3 fs-tut4 fs-tut5 
-#regex
+# threads, atomic
+  queue stack waitfreequeue
+# regex
   regex-recursion
+# context
+  context
 )
 
 #------------------------------------------------------------------------------
