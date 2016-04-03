@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 2.8)
 
 project (cpptest)
 
+message("CMake system name is ${CMAKE_SYSTEM_NAME}")
+
 OPTION (BUILD_SHARED_LIBS "Build shared libraries." OFF)
 
 if(BGAS)
@@ -79,7 +81,7 @@ foreach(test ${BOOST_TEST_SRCS})
   if (USE_BOOST_DYNAMIC_LINK AND ${test} MATCHES "options")
     set_target_properties(${test} PROPERTIES COMPILE_FLAGS "-DBOOST_ALL_DYN_LINK" )
   endif()
-  target_link_libraries(${test} ${Boost_LIBRARIES})
+  target_link_libraries(${test} ${Boost_LIBRARIES} atomic)
 endforeach()
 
 include_directories(${MPI_INCLUDE_PATH})
