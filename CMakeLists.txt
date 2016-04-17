@@ -11,7 +11,7 @@ if(BGAS)
   include_directories(${MPI_INCLUDE_PATH})
 endif()
 
-find_package(MPI)
+find_package(MPI QUIET)
 if(MPI_FOUND)
   include_directories(${MPI_INCLUDE_PATH})
 endif()
@@ -29,7 +29,7 @@ option(USE_BOOST_DYNAMIC_LINK ON "Add BOOST_ALL_DYN_LINK to flags (windows usual
 #------------------------------------------------------------------------------
 # Make a dummy library to test shared linking
 #------------------------------------------------------------------------------
-add_library(test SHARED libtest.cxx)
+add_library(dummy_lib SHARED libtest.cxx)
 
 #------------------------------------------------------------------------------
 # Simple test requiring no special libs
@@ -50,11 +50,13 @@ set(BOOST_TEST_SRCS
 # test boost filesystem
   fs-tut1 fs-tut2 fs-tut3 fs-tut4 fs-tut5 
 # threads, atomic
-  queue stack waitfreequeue
+  queue stack waitfreequeue atomicity atomic_ordering lockfree stdqueue
 # regex
   regex-recursion
 # context
   context
+# Raspberry Pi bus test
+  pi-lockfree
 )
 
 #------------------------------------------------------------------------------
