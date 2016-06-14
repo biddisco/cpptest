@@ -43,8 +43,11 @@ int main(int argc, char **argv)
   }
   else {
     printf ("Receiving Hostname = \"%s\"\n", processor_name);
-    for(i=1; i < num_proc ; i++) {
+    for (i=1; i < num_proc ; i++) {
       MPI_Recv(msg, 256, MPI_CHAR, i, tag, MPI_COMM_WORLD, &status);
+      int count = 0;
+      MPI_Get_count(&status, MPI_CHAR, &count);
+      msg[count] = 0;
       printf ("The message is: %s\n", msg);
     }
     printf ("Received messages from %d processes.\n", num_proc-1);
