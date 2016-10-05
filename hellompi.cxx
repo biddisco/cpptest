@@ -30,7 +30,7 @@ int main(int argc, char **argv)
   int name_len;
   MPI_Get_processor_name(processor_name, &name_len);
          
-  printf("MPI rank %d of %d ", rank, num_proc);
+  printf("MPI rank %d of %d %s\n", rank, num_proc, processor_name);
   if(num_proc < 2) {
     MPI_Finalize();
     return 0;
