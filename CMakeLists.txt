@@ -19,6 +19,7 @@ endif()
 #------------------------------------------------------------------------------
 # Boost
 #------------------------------------------------------------------------------
+set(Boost_ADDITIONAL_VERSIONS 1.59 1.60 1.61 1.62)
 find_package( Boost 1.54.0 REQUIRED thread atomic system program_options serialization filesystem regex context)
 if(Boost_FOUND)
   message("Boost found version ${Boost_VERSION}")

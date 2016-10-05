@@ -1,6 +1,6 @@
 #include <atomic>
 #include <iostream>
-#include <string.h>
+#include <cstring>
 //
 #include <boost/lockfree/queue.hpp>
 #include <boost/lockfree/detail/atomic.hpp>
