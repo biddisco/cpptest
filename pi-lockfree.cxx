@@ -10,8 +10,11 @@
 // due to bad alignment of memory in boost::lockfree
 
 //#define STR(x)   #x
-#define SHOW_DEFINE(x) \
-  printf("%-20s %20s\n", #x, strcmp(BOOST_PP_STRINGIZE(x),#x)!=0 ? "is     defined" : "is NOT defined")
+#define SHOW_DEFINE(x) { \
+  bool exists = strcmp(BOOST_PP_STRINGIZE(x),#x)!=0; \
+  printf("%-20s %20s\t", #x, exists ? "is     defined" : "is NOT defined"); \
+  if (exists) { printf("%s",BOOST_PP_STRINGIZE(x)); } \
+  printf("\n"); }
 
 int main()
 {
@@ -47,6 +50,8 @@ int main()
   SHOW_DEFINE(__ARM_ARCH_7S__);
   //
   SHOW_DEFINE(__aarch64__);
+  //
+  SHOW_DEFINE(_POSIX_VERSION);
   //
 #ifdef BOOST_LOCKFREE_NO_HDR_ATOMIC
   std::cout << "Boost lockfree using boost::atomic \n";
