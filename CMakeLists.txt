@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 2.8)
 
 project (cpptest)
 
+cmake_policy(SET CMP0060 NEW)
+
 message("CMake system name is ${CMAKE_SYSTEM_NAME}")
 
 OPTION (BUILD_SHARED_LIBS "Build shared libraries." OFF)
@@ -19,7 +21,7 @@ endif()
 #------------------------------------------------------------------------------
 # Boost
 #------------------------------------------------------------------------------
-set(Boost_ADDITIONAL_VERSIONS 1.59 1.60 1.61 1.62)
+set(Boost_ADDITIONAL_VERSIONS 1.59 1.60 1.61 1.62 1.63 1.64 1.65 1.66 1.67)
 find_package( Boost 1.54.0 REQUIRED thread atomic system program_options serialization filesystem regex context)
 if(Boost_FOUND)
   message("Boost found version ${Boost_VERSION}")
@@ -84,7 +86,10 @@ foreach(test ${BOOST_TEST_SRCS})
   if (USE_BOOST_DYNAMIC_LINK AND ${test} MATCHES "options")
     set_target_properties(${test} PROPERTIES COMPILE_FLAGS "-DBOOST_ALL_DYN_LINK" )
   endif()
-  target_link_libraries(${test} ${Boost_LIBRARIES} atomic)
+  target_link_libraries(${test} ${Boost_LIBRARIES} )
+  if (CMAKE_COMPILER_IS_GNUCXX )
+    target_link_libraries(${test} atomic )
+  endif()
 endforeach()
 
 include_directories(${MPI_INCLUDE_PATH})
