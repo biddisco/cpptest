@@ -12,9 +12,17 @@
 //#define STR(x)   #x
 #define SHOW_DEFINE(x) { \
   bool exists = strcmp(BOOST_PP_STRINGIZE(x),#x)!=0; \
-  printf("%-20s %20s\t", #x, exists ? "is     defined" : "is NOT defined"); \
+  printf("%-40s %s\t", #x, exists ? "is     defined" : "is NOT defined"); \
   if (exists) { printf("%s",BOOST_PP_STRINGIZE(x)); } \
   printf("\n"); }
+
+#define SHOW_DEFINE_2(x, a, b) { \
+  bool exists = strcmp(BOOST_PP_STRINGIZE(x),#x)!=0; \
+  printf("%-40s %s\t", #x, exists ? "is     defined" : "is NOT defined"); \
+  if (exists) { printf("%s\t%s",BOOST_PP_STRINGIZE(x), a); } \
+  else        { printf("%s",b); } \
+  printf("\n"); }
+
 
 int main()
 {
@@ -53,13 +61,9 @@ int main()
   //
   SHOW_DEFINE(_POSIX_VERSION);
   //
-#ifdef BOOST_LOCKFREE_NO_HDR_ATOMIC
-  std::cout << "Boost lockfree using boost::atomic \n";
-#else
-  std::cout << "Boost lockfree using std::atomic \n";
-#endif
-  std::cout << "BOOST_LOCKFREE_CACHELINE_ALIGNMENT is defined as \"" BOOST_PP_STRINGIZE(BOOST_LOCKFREE_CACHELINE_ALIGNMENT) "\" \n";
-  std::cout << "BOOST_LOCKFREE_CACHELINE_BYTES is defined as \"" BOOST_PP_STRINGIZE(BOOST_LOCKFREE_CACHELINE_BYTES) "\" \n";
+  SHOW_DEFINE_2(BOOST_LOCKFREE_NO_HDR_ATOMIC, "(using boost::atomic)", "(using std::atomic)");
+  SHOW_DEFINE(BOOST_LOCKFREE_CACHELINE_ALIGNMENT);
+  SHOW_DEFINE(BOOST_LOCKFREE_CACHELINE_BYTES);
   //
   std::cout << "Instantiating boost::lockfree::queue<int> \n";
   {
