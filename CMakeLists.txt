@@ -2,7 +2,9 @@ cmake_minimum_required(VERSION 2.8)
 
 project (cpptest)
 
-cmake_policy(SET CMP0060 NEW)
+if(POLICY CMP0060)
+  cmake_policy(SET CMP0060 NEW)
+endif()
 
 message("CMake system name is ${CMAKE_SYSTEM_NAME}")
 
@@ -57,7 +59,7 @@ set(BOOST_TEST_SRCS
 # regex
   regex-recursion
 # context
-  context
+#  context
 # Raspberry Pi bus test
   pi-lockfree
 )
@@ -78,23 +80,27 @@ foreach(test ${TEST_SRCS})
   add_executable(${test} ${test}.cxx)
 endforeach()
 
-include_directories(${Boost_INCLUDE_DIR})
-LINK_DIRECTORIES(${Boost_LIBRARY_DIR})
+if (Boost_FOUND)
+  include_directories(${Boost_INCLUDE_DIR})
+  LINK_DIRECTORIES(${Boost_LIBRARY_DIR})
 
-foreach(test ${BOOST_TEST_SRCS})
-  add_executable(${test} ${test}.cxx)
-  if (USE_BOOST_DYNAMIC_LINK AND ${test} MATCHES "options")
-    set_target_properties(${test} PROPERTIES COMPILE_FLAGS "-DBOOST_ALL_DYN_LINK" )
-  endif()
-  target_link_libraries(${test} ${Boost_LIBRARIES} )
-  if (CMAKE_COMPILER_IS_GNUCXX )
-    target_link_libraries(${test} atomic )
-  endif()
-endforeach()
+  foreach(test ${BOOST_TEST_SRCS})
+    add_executable(${test} ${test}.cxx)
+    if (USE_BOOST_DYNAMIC_LINK AND ${test} MATCHES "options")
+      set_target_properties(${test} PROPERTIES COMPILE_FLAGS "-DBOOST_ALL_DYN_LINK" )
+    endif()
+    target_link_libraries(${test} ${Boost_LIBRARIES} )
+    if (CMAKE_COMPILER_IS_GNUCXX )
+      target_link_libraries(${test} atomic )
+    endif()
+  endforeach()
+endif()
 
 include_directories(${MPI_INCLUDE_PATH})
 
 if(MPI_FOUND)
+  include_directories(${MPI_INCLUDE_PATH})
+
   foreach(test ${MPI_TEST_SRCS})
     add_executable(${test} ${test}.cxx)
     target_link_libraries(${test} ${MPI_C_LIBRARIES})
