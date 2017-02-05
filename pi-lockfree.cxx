@@ -12,13 +12,13 @@
 //#define STR(x)   #x
 #define SHOW_DEFINE(x) { \
   bool exists = strcmp(BOOST_PP_STRINGIZE(x),#x)!=0; \
-  printf("%-40s %s\t", #x, exists ? "is     defined" : "is NOT defined"); \
+  printf("%-40s %20s\t", #x, exists ? "is     defined" : "is NOT defined"); \
   if (exists) { printf("%s",BOOST_PP_STRINGIZE(x)); } \
   printf("\n"); }
 
 #define SHOW_DEFINE_2(x, a, b) { \
   bool exists = strcmp(BOOST_PP_STRINGIZE(x),#x)!=0; \
-  printf("%-40s %s\t", #x, exists ? "is     defined" : "is NOT defined"); \
+  printf("%-40s %20s\t", #x, exists ? "is     defined" : "is NOT defined"); \
   if (exists) { printf("%s\t%s",BOOST_PP_STRINGIZE(x), a); } \
   else        { printf("%s",b); } \
   printf("\n"); }
