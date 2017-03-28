@@ -3,6 +3,7 @@
 #include <iostream>
 #include <iomanip>
 #include <random>
+#include <cmath>
 
 #include <boost/accumulators/accumulators.hpp>
 #include <boost/accumulators/statistics/density.hpp>
@@ -37,15 +38,13 @@ void plot_histo(Histo &histo, double normalize) {
 // --------------------------------------------------------------------------
 int main(int argc, char** argv)
 {
+    // create some random data
     std::default_random_engine generator;
     std::normal_distribution<double> distribution(bins/2.0, 2.0);
     std::vector<double> data(1000000);
-
-    // create some random data
     std::generate(data.begin(), data.end(), std::bind(distribution, generator));
-    int c = data.size(); // cache size for histogramm.
 
-    // create an accumulator
+    // create two accumulator based histograms
     estimate_histo histo_1(tag::density::num_bins = bins,
                            tag::density::cache_size = 100);
 
@@ -54,7 +53,7 @@ int main(int argc, char** argv)
                         tag::histogram::num_bins   = bins);
 
     // fill accumulator
-    for (int j = 0; j < c; ++j) {
+    for (int j = 0; j < data.size(); ++j) {
         histo_1(data[j]);
         histo_2(data[j]);
     }
@@ -67,6 +66,31 @@ int main(int argc, char** argv)
 
     std::cout << "Fixed bin size histogram \n";
     plot_histo(hist2, 80.0/data.size());
+
+
+    // create some random data for log histogram
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_int_distribution<uint32_t> dis(1, std::numeric_limits<uint32_t>::max());
+    std::vector<double> datal2(1000000);
+
+    std::generate(datal2.begin(), datal2.end(), std::bind(dis, gen));
+
+    // create accumulator based histogram
+    fixed_histo histo_3(tag::histogram::limit_low  = 1,
+                        tag::histogram::limit_high = 31,
+                        tag::histogram::num_bins   = 30);
+
+    double epsilon = 1E-6;
+    // fill accumulator
+    for(auto &val : datal2) {
+        histo_3(std::log2(val + epsilon));
+    }
+
+    histogram_type hist3 = histogram(histo_3);
+
+    std::cout << "Fixed bin log2 histogram \n";
+    plot_histo(hist3, 80.0/data.size());
 
     return 0;
 }
