@@ -39,25 +39,27 @@ add_library(dummy_lib SHARED libtest.cxx)
 #------------------------------------------------------------------------------
 # Simple test requiring no special libs
 #------------------------------------------------------------------------------
-set(TEST_SRCS 
+set(TEST_SRCS
 # simple c++test
-  hello 
+  hello
 )
 
 #------------------------------------------------------------------------------
 # Simple tests which have one c++ file per exe
 #------------------------------------------------------------------------------
-set(BOOST_TEST_SRCS 
+set(BOOST_TEST_SRCS
 # test boost serialize
-  serialize 
+  serialize
 # test boost program options
-  options 
+  options
 # test boost filesystem
-  fs-tut1 fs-tut2 fs-tut3 fs-tut4 fs-tut5 
+  fs-tut1 fs-tut2 fs-tut3 fs-tut4 fs-tut5
 # threads, atomic
   queue stack waitfreequeue atomicity atomic_ordering lockfree stdqueue
 # regex
   regex-recursion
+# accumulators/statistics
+  histogram
 # context
 #  context
 # Raspberry Pi bus test
@@ -67,10 +69,10 @@ set(BOOST_TEST_SRCS
 #------------------------------------------------------------------------------
 # MPI tests which have one c++ file per exe
 #------------------------------------------------------------------------------
-set(MPI_TEST_SRCS 
+set(MPI_TEST_SRCS
 # simple mpi c++test
   hellompi
-) 
+)
 
 #------------------------------------------------------------------------------
 # create exes for tests
@@ -96,6 +98,7 @@ if (Boost_FOUND)
   endforeach()
 endif()
 
+include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 include_directories(${MPI_INCLUDE_PATH})
 
 if(MPI_FOUND)
