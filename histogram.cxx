@@ -22,15 +22,36 @@ const int bins = 20;
 const double binwidth = 1.0;
 
 // --------------------------------------------------------------------------
+std::string size_human(uint64_t size)
+{
+    char unit;
+    const char *units [] = {" Bytes", " kB", " MB", " GB", " TB"};
+
+    for (unit=-1; (++unit<4) && (size>1023); size/=1024);
+    return std::to_string(size) + units[unit];
+}
+
+// --------------------------------------------------------------------------
 template <typename Histo>
-void plot_histo(Histo &histo, double normalize) {
+void plot_histo(Histo &histo, double normalize, bool KBMB=false) {
     double increment = histo[1].first - histo[0].first;
     for (int i=0; i<histo.size(); ++i) {
-        std::cout << std::setw(4)  << i << ": "
-                  << std::setw(8)  << std::setprecision(4) << histo[i].first << " - "
-                  << std::setw(8)  << std::setprecision(4) << histo[i].first+increment << " : "
-                  << std::setw(12) << std::setprecision(8) << histo[i].second << " : "
-                  << std::string(histo[i].second * normalize, '*') << std::endl;
+        double r0 = histo[i].first;
+        double r1 = histo[i].first + increment;
+        if (KBMB) {
+            std::cout << std::setw(4)  << i << ": "
+                      << std::setw(12) << size_human(uint64_t(1) << static_cast<int>(r0)) << " - "
+                      << std::setw(12) << size_human(uint64_t(1) << static_cast<int>(r1)) << " : "
+                      << std::setw(12) << std::setprecision(8) << histo[i].second << " : "
+                      << std::string(histo[i].second * normalize, '*') << std::endl;
+        }
+        else {
+            std::cout << std::setw(4)  << i << ": "
+                      << std::setw(12) << std::setprecision(8) << r0 << " - "
+                      << std::setw(12) << std::setprecision(8) << r1 << " : "
+                      << std::setw(12) << std::setprecision(8) << histo[i].second << " : "
+                      << std::string(histo[i].second * normalize, '*') << std::endl;
+        }
     }
     std::cout << std::endl;
 }
@@ -90,7 +111,7 @@ int main(int argc, char** argv)
     histogram_type hist3 = histogram(histo_3);
 
     std::cout << "Fixed bin log2 histogram \n";
-    plot_histo(hist3, 80.0/data.size());
+    plot_histo(hist3, 80.0/data.size(), true);
 
     return 0;
 }
