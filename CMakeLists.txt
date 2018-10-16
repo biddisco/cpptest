@@ -65,6 +65,8 @@ set(BOOST_TEST_SRCS
   regex-recursion
 # accumulators/statistics
   histogram
+# thread
+  thread
 # context
 #  context
 # Raspberry Pi bus test
