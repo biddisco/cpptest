@@ -10,6 +10,25 @@ message("CMake system name is ${CMAKE_SYSTEM_NAME}")
 
 OPTION (BUILD_SHARED_LIBS "Build shared libraries." OFF)
 
+#------------------------------------------------------------------------------
+# Setup Output directories
+#------------------------------------------------------------------------------
+SET (CMAKE_RUNTIME_OUTPUT_DIRECTORY
+    ${PROJECT_BINARY_DIR}/bin CACHE PATH "Single Directory for all Executables."
+)
+SET (CMAKE_LIBRARY_OUTPUT_DIRECTORY
+    ${PROJECT_BINARY_DIR}/bin CACHE PATH "Single Directory for all Libraries"
+)
+SET (CMAKE_ARCHIVE_OUTPUT_DIRECTORY
+    ${PROJECT_BINARY_DIR}/bin CACHE PATH "Single Directory for all static libraries."
+)
+
+#------------------------------------------------------------------------------
+# 
+#------------------------------------------------------------------------------
+list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
+message("${PROJECT_SOURCE_DIR}/cmake")
+
 if(BGAS)
   include(BGAS-MVAPICH.cmake)
   include_directories(${MPI_INCLUDE_PATH})
@@ -82,6 +101,14 @@ set(MPI_TEST_SRCS
 )
 
 #------------------------------------------------------------------------------
+# Threading libs needed on linux
+#------------------------------------------------------------------------------
+if(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
+  # Linux specific code
+  set(THREAD_LIBRARIES pthread)
+endif(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
+
+#------------------------------------------------------------------------------
 # create exes for tests
 #------------------------------------------------------------------------------
 
@@ -98,7 +125,7 @@ if (Boost_FOUND)
     if (USE_BOOST_DYNAMIC_LINK AND ${test} MATCHES "options")
       set_target_properties(${test} PROPERTIES COMPILE_FLAGS "-DBOOST_ALL_DYN_LINK" )
     endif()
-    target_link_libraries(${test} ${Boost_LIBRARIES} )
+    target_link_libraries(${test} ${Boost_LIBRARIES} ${THREAD_LIBRARIES})
     if (CMAKE_COMPILER_IS_GNUCXX )
       target_link_libraries(${test} atomic )
     endif()
