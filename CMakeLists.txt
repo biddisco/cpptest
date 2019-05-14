@@ -45,7 +45,6 @@ endif()
 #------------------------------------------------------------------------------
 # Boost
 #------------------------------------------------------------------------------
-set(Boost_ADDITIONAL_VERSIONS 1.59 1.60 1.61 1.62 1.63 1.64 1.65 1.66 1.67)
 find_package( Boost 1.54.0 QUIET COMPONENTS thread atomic system program_options serialization filesystem regex context)
 if(Boost_FOUND)
   message("-------------------------\nBoost found version ${Boost_VERSION}\n-------------------------")
@@ -66,6 +65,7 @@ add_library(dummy_lib SHARED libtest.cxx)
 set(TEST_SRCS
 # simple c++test
   hello
+  concurrent_test
 )
 
 #------------------------------------------------------------------------------
