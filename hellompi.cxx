@@ -10,8 +10,8 @@
 int main(int argc, char **argv)
 {
   int rank;
-  char msg[256];
-  char fname[256];
+  char msg[1024];
+  char fname[1024];
   MPI_Status status;
   int num_proc;
   int i;
@@ -29,7 +29,7 @@ int main(int argc, char **argv)
   char processor_name[MPI_MAX_PROCESSOR_NAME];
   int name_len;
   MPI_Get_processor_name(processor_name, &name_len);
-         
+
   printf("MPI rank %d of %d %s\n", rank, num_proc, processor_name);
   if(num_proc < 2) {
     MPI_Finalize();
