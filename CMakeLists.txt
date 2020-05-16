@@ -1,22 +1,18 @@
-cmake_minimum_required(VERSION 2.8)
+cmake_minimum_required(VERSION 3.12)
 
 project (cpptest)
+message("CMake system name is ${CMAKE_SYSTEM_NAME}")
 
 #------------------------------------------------------------------------------
 # Policies
 #------------------------------------------------------------------------------
-if(POLICY CMP0060)
-  cmake_policy(SET CMP0060 NEW)
-endif()
+cmake_policy(SET CMP0028 NEW) # Double colon in target name means ALIAS or IMPORTED target
+cmake_policy(SET CMP0060 NEW) # Link libraries by full path even in implicit directories
+cmake_policy(SET CMP0074 NEW) # find_package uses XXX_ROOT vars
 
-if(POLICY CMP0028)
-  cmake_policy(SET CMP0028 NEW)
-endif()
-
-cmake_policy(SET CMP0074 NEW)
-
-message("CMake system name is ${CMAKE_SYSTEM_NAME}")
-
+#------------------------------------------------------------------------------
+# Options
+#------------------------------------------------------------------------------
 OPTION (BUILD_SHARED_LIBS "Build shared libraries." ON)
 
 #------------------------------------------------------------------------------
@@ -33,46 +29,9 @@ SET (CMAKE_ARCHIVE_OUTPUT_DIRECTORY
 )
 
 #------------------------------------------------------------------------------
-# 
+# Reserved for future use
 #------------------------------------------------------------------------------
 list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
-message("${PROJECT_SOURCE_DIR}/cmake")
-
-if(BGAS)
-  include(BGAS-MVAPICH.cmake)
-  include_directories(${MPI_INCLUDE_PATH})
-endif()
-
-find_package(MPI QUIET)
-if(MPI_FOUND)
-  include_directories(${MPI_INCLUDE_PATH})
-  message("-------------------------\nMPI found version ${MPI_CXX_VERSION}\n-------------------------")
-else()
-  message("MPI was not found, no MPI tests will be built")
-endif()
-
-#------------------------------------------------------------------------------
-# Boost
-#------------------------------------------------------------------------------
-find_package( Boost 1.54.0 QUIET COMPONENTS thread atomic system program_options serialization filesystem regex context)
-if(Boost_FOUND)
-  message("-------------------------\nBoost found version ${Boost_VERSION}\n-------------------------")
-  set(PROJECT_Boost_LIBRARIES ${Boost_LIBRARIES})
-else()
-  message("Boost was not found, no Boost tests will be built")
-endif()
-
-option(USE_BOOST_DYNAMIC_LINK ON "Add BOOST_ALL_DYN_LINK to flags (windows usually)")
-
-#------------------------------------------------------------------------------
-# HPX
-#------------------------------------------------------------------------------
-find_package( HPX QUIET)
-if(HPX_FOUND)
-    message("-------------------------\nHPX found version ${HPX_VERSION}\n-------------------------")
-else()
-    message("HPX was not found, no HPX tests will be built")
-endif()
 
 #------------------------------------------------------------------------------
 # Make a dummy library to test shared linking
@@ -83,94 +42,29 @@ add_library(dummy_lib SHARED libtest.cxx)
 # Simple test requiring no special libs
 #------------------------------------------------------------------------------
 set(TEST_SRCS
-# simple c++test
-  hello
-  concurrent_test
+  hello-cxx
 )
-
-#------------------------------------------------------------------------------
-# Simple tests which have one c++ file per exe
-#------------------------------------------------------------------------------
-set(BOOST_TEST_SRCS
-# test boost serialize
-  serialize
-# test boost program options
-  options
-# test boost filesystem
-  fs-tut1 fs-tut2 fs-tut3 fs-tut4 fs-tut5
-# threads, atomic
-  queue stack waitfreequeue atomicity atomic_ordering lockfree stdqueue
-# regex
-  regex-recursion
-# accumulators/statistics
-  histogram
-# thread
-  thread
-# context
-#  context
-# Raspberry Pi bus test
-  pi-lockfree
-)
-
-#------------------------------------------------------------------------------
-# MPI tests which have one c++ file per exe
-#------------------------------------------------------------------------------
-set(MPI_TEST_SRCS
-# simple mpi c++test
-  hellompi
-)
-
-#------------------------------------------------------------------------------
-# HPX tests which have one c++ file per exe
-#------------------------------------------------------------------------------
-set(HPX_TEST_SRCS
-  hpx_hello_world
-)
-
-#------------------------------------------------------------------------------
-# Threading libs needed on linux
-#------------------------------------------------------------------------------
-if(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
-  # Linux specific code
-  set(THREAD_LIBRARIES pthread)
-endif(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
 
 #------------------------------------------------------------------------------
 # create exes for tests
 #------------------------------------------------------------------------------
-
 foreach(test ${TEST_SRCS})
   add_executable(${test} ${test}.cxx)
+  target_include_directories(${test} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+  target_link_libraries(${test} PRIVATE dummy_lib)
 endforeach()
 
-if (Boost_FOUND)
-  message("Boost libraries are ${Boost_LIBRARIES}")
-  foreach(test ${BOOST_TEST_SRCS})
-    add_executable(${test} ${test}.cxx)
-    if (USE_BOOST_DYNAMIC_LINK AND ${test} MATCHES "options")
-      set_target_properties(${test} PROPERTIES COMPILE_FLAGS "-DBOOST_ALL_DYN_LINK" )
-    endif()
-    target_link_libraries(${test} ${PROJECT_Boost_LIBRARIES} ${THREAD_LIBRARIES})
-    target_include_directories(${test} PRIVATE ${Boost_INCLUDE_DIRS})
-    if (CMAKE_COMPILER_IS_GNUCXX )
-      target_link_libraries(${test} atomic )
-    endif()
-  endforeach()
-endif()
+#------------------------------------------------------------------------------
+# Boost tests 
+#------------------------------------------------------------------------------
+add_subdirectory(boost)
 
-include_directories(${CMAKE_CURRENT_SOURCE_DIR})
-include_directories(${MPI_INCLUDE_PATH})
+#------------------------------------------------------------------------------
+# MPI tests 
+#------------------------------------------------------------------------------
+add_subdirectory(mpi)
 
-if(MPI_FOUND)
-  foreach(test ${MPI_TEST_SRCS})
-    add_executable(${test} ${test}.cxx)
-    target_link_libraries(${test} MPI::MPI_CXX)
-  endforeach()
-endif()
-
-if (HPX_FOUND)
-   foreach(test ${HPX_TEST_SRCS})
-    add_executable(${test} ${test}.cxx)
-    target_link_libraries(${test} HPX::hpx)
-  endforeach()
-endif()
+#------------------------------------------------------------------------------
+# HPX tests
+#------------------------------------------------------------------------------
+add_subdirectory(hpx)
