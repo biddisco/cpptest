@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.12)
 
-project (cpptest)
+project (cpptest C CXX)
 message("CMake system name is ${CMAKE_SYSTEM_NAME}")
 
 #------------------------------------------------------------------------------
@@ -68,3 +68,8 @@ add_subdirectory(mpi)
 # HPX tests
 #------------------------------------------------------------------------------
 add_subdirectory(hpx)
+
+#------------------------------------------------------------------------------
+# CUDA tests
+#------------------------------------------------------------------------------
+add_subdirectory(cuda)
