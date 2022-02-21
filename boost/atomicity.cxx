@@ -28,7 +28,7 @@
 
 #include <algorithm>
 #include <boost/ref.hpp>
-#include <boost/bind.hpp>
+#include <boost/bind/bind.hpp>
 #include <boost/function.hpp>
 #include <boost/date_time/posix_time/posix_time_types.hpp>
 #include <boost/date_time/posix_time/time_formatters.hpp>
@@ -38,6 +38,8 @@
 #include <boost/thread/mutex.hpp>
 #include <boost/thread/condition_variable.hpp>
 #include <boost/core/lightweight_test.hpp>
+
+using namespace boost::placeholders;
 
 /* helper class to let two instances of a function race against each
 other, with configurable timeout and early abort on detection of error */
