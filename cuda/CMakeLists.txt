@@ -55,6 +55,7 @@ endif()
 #------------------------------------------------------------------------------
 set(CUDA_TEST_SRCS
     hello-cuda
+    transpose
 )
 
 #------------------------------------------------------------------------------
@@ -62,4 +63,5 @@ set(CUDA_TEST_SRCS
 #------------------------------------------------------------------------------
 foreach(test ${CUDA_TEST_SRCS})
   add_executable(${test} ${test}.cu)
+  target_include_directories(${test} PRIVATE ./Common)
 endforeach()
