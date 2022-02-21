@@ -6,13 +6,14 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
   #  set(THREAD_LIBRARIES pthread)
 endif(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
 
+set(Boost_USE_STATIC_LIBS ON)
+
 #------------------------------------------------------------------------------
 # Boost
 #------------------------------------------------------------------------------
-find_package( Boost 1.54.0 QUIET COMPONENTS thread atomic system program_options serialization filesystem regex context)
+find_package( Boost 1.54.0 QUIET COMPONENTS thread atomic system program_options serialization context unit_test_framework)
 if(Boost_FOUND)
   message("-------------------------\nBoost found version ${Boost_VERSION}\n-------------------------")
-  set(PROJECT_Boost_LIBRARIES ${Boost_LIBRARIES})
 else()
   message("Boost was not found, no Boost tests will be built")
   return()
@@ -21,7 +22,7 @@ endif()
 #------------------------------------------------------------------------------
 # OPtions
 #------------------------------------------------------------------------------
-option(USE_BOOST_DYNAMIC_LINK ON "Add BOOST_ALL_DYN_LINK to flags (windows usually)")
+option(USE_BOOST_DYNAMIC_LINK OFF "Add BOOST_ALL_DYN_LINK to flags (windows usually)")
 
 message("Boost libraries are ${Boost_LIBRARIES}")
 
@@ -33,18 +34,14 @@ set(BOOST_TEST_SRCS
   serialize
 # test boost program options
   options
-# test boost filesystem
-  fs-tut1 fs-tut2 fs-tut3 fs-tut4 fs-tut5
 # threads, atomic
   queue stack waitfreequeue atomicity atomic_ordering lockfree stdqueue
-# regex
-  regex-recursion
 # accumulators/statistics
   histogram
 # thread
   thread
 # context
-#  context
+  test_fiber
 # Raspberry Pi bus test
   pi-lockfree
 )
@@ -53,13 +50,28 @@ set(BOOST_TEST_SRCS
 # create exes for tests
 #------------------------------------------------------------------------------
 foreach(test ${BOOST_TEST_SRCS})
+  set(_args)
   add_executable(${test} ${test}.cxx)
+
+  if (${test} MATCHES "options")
+    set(_args -i 3 1 2 3 3 3 6 4 -j 1 2 3 4 5)
+  endif()
   if (USE_BOOST_DYNAMIC_LINK AND ${test} MATCHES "options")
-    set_target_properties(${test} PROPERTIES COMPILE_FLAGS "-DBOOST_ALL_DYN_LINK" )
+      target_compile_definitions(${test} PRIVATE "BOOST_TEST_DYN_LINK=1")
   endif()
-  target_link_libraries(${test} ${PROJECT_Boost_LIBRARIES} ${THREAD_LIBRARIES})
+  if (USE_BOOST_DYNAMIC_LINK AND ${test} MATCHES "fiber")
+    target_compile_definitions(${test} PRIVATE "BOOST_TEST_DYN_LINK=1")
+  endif()
+  target_link_libraries(${test} ${Boost_LIBRARIES})
   target_include_directories(${test} PRIVATE ${Boost_INCLUDE_DIRS})
-  if (CMAKE_COMPILER_IS_GNUCXX )
-    target_link_libraries(${test} atomic )
-  endif()
+
+  # indicates the shared library variant
+  # indicates the link paths
+  target_link_libraries(${test} ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
+  add_definitions(-DBOOST_TEST_DYN_LINK)
+
+#  if (CMAKE_COMPILER_IS_GNUCXX )
+#    target_link_libraries(${test} atomic)
+#  endif()
+  add_test(NAME ${test} COMMAND ${test} ${_args})
 endforeach()

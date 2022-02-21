@@ -34,6 +34,12 @@ SET (CMAKE_ARCHIVE_OUTPUT_DIRECTORY
 list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
 
 #------------------------------------------------------------------------------
+# Enable testing
+#------------------------------------------------------------------------------
+enable_testing()
+include(CTest)
+
+#------------------------------------------------------------------------------
 # Make a dummy library to test shared linking
 #------------------------------------------------------------------------------
 add_library(dummy_lib SHARED libtest.cxx)
@@ -52,15 +58,16 @@ foreach(test ${TEST_SRCS})
   add_executable(${test} ${test}.cxx)
   target_include_directories(${test} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
   target_link_libraries(${test} PRIVATE dummy_lib)
+  add_test(NAME ${test} COMMAND ${test})
 endforeach()
 
 #------------------------------------------------------------------------------
-# Boost tests 
+# Boost tests
 #------------------------------------------------------------------------------
 add_subdirectory(boost)
 
 #------------------------------------------------------------------------------
-# MPI tests 
+# MPI tests
 #------------------------------------------------------------------------------
 add_subdirectory(mpi)
 
