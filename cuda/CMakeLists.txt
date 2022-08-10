@@ -27,9 +27,13 @@ if(${CUDA_RETURN_CODE} EQUAL 0)
                     RESULT_VARIABLE CUDA_RETURN_CODE
                     OUTPUT_VARIABLE ARCH)
     if(${CUDA_RETURN_CODE} EQUAL 0)
+        string(REPLACE "-arch=sm_" "" ARCH_NUM "${ARCH}")
         message(STATUS "CUDA Architecture: ${ARCH}")
         message(STATUS "CUDA Version: ${CMAKE_CUDA_COMPILER_VERSION}")
         message(STATUS "CUDA Path: ${CMAKE_CUDA_COMPILER_LIBRARY_ROOT}")
+        message(STATUS "")
+        message(STATUS "USE cmake invocation including: cmake -DCMAKE_CUDA_ARCHITECTURES=${ARCH_NUM}")
+        message(STATUS "")
         set(CUDA_NVCC_FLAGS "${ARCH}")
     else()
         message(WARNING "Execute of check_cuda failed: ${ARCH}")
@@ -37,6 +41,7 @@ if(${CUDA_RETURN_CODE} EQUAL 0)
 else()
     message(WARNING "Compile of check_cuda failed: ${ARCH}")
 endif()
+
 
 #------------------------------------------------------------------------------
 # Check Find CudaToolkit works ok
