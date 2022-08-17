@@ -3,11 +3,13 @@
 #------------------------------------------------------------------------------
 find_package(MPI QUIET)
 
+message(STATUS "-------------------------")
+
 if(MPI_FOUND)
   include_directories(${MPI_INCLUDE_PATH})
-  message("-------------------------\nMPI found version ${MPI_CXX_VERSION}\n-------------------------")
+  message(STATUS "MPI found version ${MPI_CXX_VERSION}")
 else()
-  message("MPI was not found, no MPI tests will be built")
+  message(STATUS "MPI was not found, no MPI tests will be built")
   return()
 endif()
 

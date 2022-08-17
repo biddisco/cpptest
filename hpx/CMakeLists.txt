@@ -1,13 +1,15 @@
 #------------------------------------------------------------------------------
 # HPX
 #------------------------------------------------------------------------------
-find_package( HPX QUIET)
+find_package(HPX QUIET)
+
+message(STATUS "-------------------------")
 
 if(HPX_FOUND)
-    message("-------------------------\nHPX found version ${HPX_VERSION}\n-------------------------")
+  message(STATUS "HPX found version ${HPX_VERSION}")
 else()
-    message("HPX was not found, no HPX tests will be built")
-    return()
+  message(STATUS "HPX was not found, no HPX tests will be built")
+  return()
 endif()
 
 #------------------------------------------------------------------------------

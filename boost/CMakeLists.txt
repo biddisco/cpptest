@@ -1,10 +1,4 @@
-#------------------------------------------------------------------------------
-# Threading libs needed on linux
-#------------------------------------------------------------------------------
-if(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
-  # Linux specific code
-  #  set(THREAD_LIBRARIES pthread)
-endif(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
+message(STATUS "-------------------------")
 
 set(Boost_USE_STATIC_LIBS ON)
 
@@ -13,9 +7,10 @@ set(Boost_USE_STATIC_LIBS ON)
 #------------------------------------------------------------------------------
 find_package( Boost 1.54.0 QUIET COMPONENTS thread atomic system program_options serialization context unit_test_framework)
 if(Boost_FOUND)
-  message("-------------------------\nBoost found version ${Boost_VERSION}\n-------------------------")
+  message(STATUS "Boost found version ${Boost_VERSION}")
+  message(STATUS "Boost libraries are ${Boost_LIBRARIES}")
 else()
-  message("Boost was not found, no Boost tests will be built")
+  message(STATUS "Boost was not found, no Boost tests will be built")
   return()
 endif()
 
@@ -23,8 +18,6 @@ endif()
 # OPtions
 #------------------------------------------------------------------------------
 option(USE_BOOST_DYNAMIC_LINK OFF "Add BOOST_ALL_DYN_LINK to flags (windows usually)")
-
-message("Boost libraries are ${Boost_LIBRARIES}")
 
 #------------------------------------------------------------------------------
 # Simple tests which have one c++ file per exe
@@ -54,13 +47,13 @@ foreach(test ${BOOST_TEST_SRCS})
   add_executable(${test} ${test}.cxx)
 
   if (${test} MATCHES "options")
-    set(_args -i 3 1 2 3 3 3 6 4 -j 1 2 3 4 5)
+  set(_args -i 3 1 2 3 3 3 6 4 -j 1 2 3 4 5)
   endif()
   if (USE_BOOST_DYNAMIC_LINK AND ${test} MATCHES "options")
-      target_compile_definitions(${test} PRIVATE "BOOST_TEST_DYN_LINK=1")
+    target_compile_definitions(${test} PRIVATE "BOOST_TEST_DYN_LINK=1")
   endif()
   if (USE_BOOST_DYNAMIC_LINK AND ${test} MATCHES "fiber")
-    target_compile_definitions(${test} PRIVATE "BOOST_TEST_DYN_LINK=1")
+  target_compile_definitions(${test} PRIVATE "BOOST_TEST_DYN_LINK=1")
   endif()
   target_link_libraries(${test} ${Boost_LIBRARIES})
   target_include_directories(${test} PRIVATE ${Boost_INCLUDE_DIRS})
@@ -71,7 +64,7 @@ foreach(test ${BOOST_TEST_SRCS})
   add_definitions(-DBOOST_TEST_DYN_LINK)
 
 #  if (CMAKE_COMPILER_IS_GNUCXX )
-#    target_link_libraries(${test} atomic)
+#  target_link_libraries(${test} atomic)
 #  endif()
   add_test(NAME ${test} COMMAND ${test} ${_args})
 endforeach()
