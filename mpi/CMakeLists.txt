@@ -26,4 +26,8 @@ set(MPI_TEST_SRCS
 foreach(test ${MPI_TEST_SRCS})
   add_executable(${test} ${test}.cxx)
   target_link_libraries(${test} MPI::MPI_CXX)
+
+  add_test(NAME ${test}
+    COMMAND ${MPIEXEC_EXECUTABLE} ${MPIEXEC_NUMPROC_FLAG} 2 ${MPIEXEC_PREFLAGS}
+        $<TARGET_FILE:${test}> ${MPIEXEC_POSTFLAGS})
 endforeach()
