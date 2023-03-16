@@ -1,7 +1,5 @@
 cmake_policy(SET CMP0104 NEW) # Set CMAKE_CUDA_ARCHITECTURES for NVidia compiler
 
-message(STATUS "-------------------------")
-
 #------------------------------------------------------------------------------
 # CUDA Language support
 #------------------------------------------------------------------------------

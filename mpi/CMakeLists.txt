@@ -3,8 +3,6 @@
 #------------------------------------------------------------------------------
 find_package(MPI QUIET)
 
-message(STATUS "-------------------------")
-
 if(MPI_FOUND)
   include_directories(${MPI_INCLUDE_PATH})
   message(STATUS "MPI found version ${MPI_CXX_VERSION}")

@@ -5,8 +5,6 @@
 # cmake -DCMAKE_HIP_ARCHITECTURES=gfx90a -DHIP_CLANG_INCLUDE_PATH=$HIP_PATH/include -DCLANGRT_BUILTINS= ~/src/cpptest/
 #
 
-message(STATUS "-------------------------")
-
 include(CheckLanguage)
 check_language(HIP)
 

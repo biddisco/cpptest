@@ -3,8 +3,6 @@
 #------------------------------------------------------------------------------
 find_package(HPX QUIET)
 
-message(STATUS "-------------------------")
-
 if(HPX_FOUND)
   message(STATUS "HPX found version ${HPX_VERSION}")
 else()
