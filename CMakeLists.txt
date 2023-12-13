@@ -3,12 +3,10 @@ cmake_minimum_required(VERSION 3.12)
 project (cpptest C CXX)
 message(STATUS "CMake system name is ${CMAKE_SYSTEM_NAME}")
 
-#------------------------------------------------------------------------------
-# Policies
-#------------------------------------------------------------------------------
-cmake_policy(SET CMP0028 NEW) # Double colon in target name means ALIAS or IMPORTED target
-cmake_policy(SET CMP0060 NEW) # Link libraries by full path even in implicit directories
-cmake_policy(SET CMP0074 NEW) # find_package uses XXX_ROOT vars
+# ------------------------------------------------------------------------------
+# Policies - use the latest of everything
+# ------------------------------------------------------------------------------
+cmake_policy(VERSION ${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION})
 
 #------------------------------------------------------------------------------
 # Options
@@ -38,6 +36,8 @@ list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
 #------------------------------------------------------------------------------
 enable_testing()
 include(CTest)
+
+set(CMAKE_CXX_STANDARD 17)
 
 #------------------------------------------------------------------------------
 # Make a dummy library to test shared linking
