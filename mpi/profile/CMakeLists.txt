@@ -1,33 +1,22 @@
 #------------------------------------------------------------------------------
 # Find MPI if possible, exit quietly if not found
 #------------------------------------------------------------------------------
-find_package(MPI QUIET)
-
-if(MPI_FOUND)
-  include_directories(${MPI_INCLUDE_PATH})
-  message(STATUS "MPI found version ${MPI_CXX_VERSION}")
-else()
-  message(STATUS "MPI was not found, no MPI tests will be built")
-  return()
-endif()
+find_package(MPI REQUIRED)
 
 #------------------------------------------------------------------------------
 # MPI tests which have one c++ file per exe
 #------------------------------------------------------------------------------
-set(MPI_TEST_SRCS
-  hello-mpi
+set(MPI_PROFILE_SRCS
+  example.cxx
+  profile.cxx
 )
 
 #------------------------------------------------------------------------------
 # create exes for tests
 #------------------------------------------------------------------------------
-foreach(test ${MPI_TEST_SRCS})
-  add_executable(${test} ${test}.cxx)
-  target_link_libraries(${test} MPI::MPI_CXX)
+add_executable(mpi_profile ${MPI_PROFILE_SRCS})
+target_link_libraries(mpi_profile MPI::MPI_CXX)
 
-  add_test(NAME ${test}
-    COMMAND ${MPIEXEC_EXECUTABLE} ${MPIEXEC_NUMPROC_FLAG} 2 ${MPIEXEC_PREFLAGS}
-        $<TARGET_FILE:${test}> ${MPIEXEC_POSTFLAGS})
-endforeach()
-
-add_subdirectory(profile)
+add_test(NAME mpi_profile
+  COMMAND ${MPIEXEC_EXECUTABLE} ${MPIEXEC_NUMPROC_FLAG} 2 ${MPIEXEC_PREFLAGS}
+      $<TARGET_FILE:mpi_profile> ${MPIEXEC_POSTFLAGS})
