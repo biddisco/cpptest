@@ -3,6 +3,7 @@
 #include <cmath>
 #include <atomic>
 #include <mutex>
+#include <stdio.h>
 
 static std::atomic<bool> single_threaded(true);
 

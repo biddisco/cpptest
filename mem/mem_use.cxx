@@ -5,6 +5,7 @@
 #include <string>
 #include <array>
 #include <vector>
+#include <cstdint>
 
 static const char *humanSize(uint64_t bytes)
 {
