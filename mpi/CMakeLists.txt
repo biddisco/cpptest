@@ -31,4 +31,13 @@ foreach(test ${MPI_TEST_SRCS})
         $<TARGET_FILE:${test}> ${MPIEXEC_POSTFLAGS})
 endforeach()
 
+message(STATUS "-------------------------")
 add_subdirectory(profile)
+
+# ------------------------------------------------------------------------------
+# CUDA + MPI tests
+# ------------------------------------------------------------------------------
+message(STATUS "-------------------------")
+add_subdirectory(MPI_ping_pong)
+
+
