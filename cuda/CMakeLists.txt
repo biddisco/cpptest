@@ -71,3 +71,6 @@ foreach(test ${CUDA_TEST_SRCS})
   target_include_directories(${test} PRIVATE ./Common)
   add_test(NAME ${test} COMMAND ${test} ${_args})
 endforeach()
+
+add_subdirectory(thrust)
+
