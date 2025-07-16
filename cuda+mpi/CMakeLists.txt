@@ -1,13 +1,10 @@
-#------------------------------------------------------------------------------
-# Find MPI if possible, exit quietly if not found
-#------------------------------------------------------------------------------
-find_package(MPI QUIET)
-
-if(MPI_FOUND)
-  include_directories(${MPI_INCLUDE_PATH})
-  message(STATUS "MPI found version ${MPI_CXX_VERSION}")
-else()
-  message(STATUS "MPI was not found, no MPI tests will be built")
+# ------------------------------------------------------------------------------
+# CUDA + MPI tests
+# ------------------------------------------------------------------------------
+find_package(CUDAToolkit)
+find_package(MPI)
+if((NOT MPI_FOUND) OR (NOT CUDAToolkit_FOUND))
+  message(STATUS "CUDA+MPI tests not being built")
   return()
 endif()
 
@@ -15,8 +12,7 @@ endif()
 # MPI tests which have one c++ file per exe
 #------------------------------------------------------------------------------
 set(MPI_TEST_SRCS
-  hello-mpi
-  hello-mpi-thread
+  allgather_bug
 )
 
 #------------------------------------------------------------------------------
@@ -25,12 +21,17 @@ set(MPI_TEST_SRCS
 foreach(test ${MPI_TEST_SRCS})
   add_executable(${test} ${test}.cxx)
   target_link_libraries(${test} MPI::MPI_CXX)
+  target_link_libraries(${test} CUDA::cudart)
 
   add_test(NAME ${test}
     COMMAND ${MPIEXEC_EXECUTABLE} ${MPIEXEC_NUMPROC_FLAG} 2 ${MPIEXEC_PREFLAGS}
         $<TARGET_FILE:${test}> ${MPIEXEC_POSTFLAGS})
 endforeach()
 
+# ------------------------------------------------------------------------------
+# Mini project for MPI_ping_pong
+# ------------------------------------------------------------------------------
 message(STATUS "-------------------------")
-add_subdirectory(profile)
+add_subdirectory(MPI_ping_pong)
+
 

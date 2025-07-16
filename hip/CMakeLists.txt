@@ -23,6 +23,36 @@ if (!hip_FOUND)
 endif()
 
 #------------------------------------------------------------------------------
+# Check working by getting compute capability
+#------------------------------------------------------------------------------
+file(MAKE_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
+set(OUTPUTFILE ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/check_hip)
+set(HIPFILE ${CMAKE_CURRENT_SOURCE_DIR}/check_hip.cpp)
+execute_process(COMMAND ${CMAKE_HIP_COMPILER} ${HIP_NVCC_FLAGS} -lhip ${HIPFILE} -o ${OUTPUTFILE}
+    RESULT_VARIABLE HIP_RETURN_CODE
+    OUTPUT_VARIABLE ARCH)
+if(${HIP_RETURN_CODE} EQUAL 0)
+  execute_process(COMMAND ${OUTPUTFILE}
+          RESULT_VARIABLE HIP_RETURN_CODE
+          OUTPUT_VARIABLE ARCH)
+  if(${HIP_RETURN_CODE} EQUAL 0)
+    string(REPLACE "-arch=sm_" "" ARCH_NUM "${ARCH}")
+    message(STATUS "HIP Architecture: ${ARCH}")
+    message(STATUS "HIP Version: ${CMAKE_HIP_COMPILER_VERSION}")
+    message(STATUS "HIP Path: ${CMAKE_HIP_COMPILER_LIBRARY_ROOT}")
+    message(STATUS "")
+    message(STATUS "USE cmake invocation including: cmake -DCMAKE_HIP_ARCHITECTURES=${ARCH_NUM}")
+    message(STATUS "")
+    set(HIP_NVCC_FLAGS "${ARCH}")
+  else()
+    message(STATUS "Execute of check_hip failed: ${ARCH}")
+  endif()
+else()
+	message(STATUS "Compile of check_hip failed: ${ARCH}")
+endif()
+
+
+#------------------------------------------------------------------------------
 # HIP tests
 #------------------------------------------------------------------------------
 set(HIP_TEST_SRCS
